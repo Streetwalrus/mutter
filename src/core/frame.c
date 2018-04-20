@@ -34,6 +34,7 @@
 void
 meta_window_ensure_frame (MetaWindow *window)
 {
+  return;
   MetaFrame *frame;
   XSetWindowAttributes attrs;
   gulong create_serial;
