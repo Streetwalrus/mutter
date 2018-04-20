@@ -894,6 +894,7 @@ ungrab_key_bindings (MetaDisplay *display)
 static void
 grab_key_bindings (MetaDisplay *display)
 {
+  return;
   GSList *windows, *l;
 
   meta_screen_grab_keys (display->screen);
@@ -1113,6 +1114,7 @@ meta_display_get_keybinding_action (MetaDisplay  *display,
 static void
 reload_keybindings (MetaDisplay *display)
 {
+  return;
   MetaKeyBindingManager *keys = &display->key_binding_manager;
 
   ungrab_key_bindings (display);
@@ -1688,6 +1690,7 @@ grab_keyboard (Window  xwindow,
                guint32 timestamp,
                int     grab_mode)
 {
+  return TRUE;
   int grab_status;
 
   unsigned char mask_bits[XIMaskLen (XI_LASTEVENT)] = { 0 };
