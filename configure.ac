@@ -248,8 +248,13 @@ AS_IF([test "$enable_remote_desktop" = "yes"], [
 ])
 AM_CONDITIONAL([HAVE_REMOTE_DESKTOP],[test "$enable_remote_desktop" = "yes"])
 
-found_introspection=no
-AM_CONDITIONAL([HAVE_INTROSPECTION],[test "$found_introspection" = "yes"])
+INTROSPECTION_VERSION=0.9.5
+GOBJECT_INTROSPECTION_CHECK([$INTROSPECTION_VERSION])
+
+if test x$found_introspection != xno; then
+  AC_DEFINE(HAVE_INTROSPECTION, 1, [Define if GObject introspection is available])
+  MUTTER_PC_MODULES="$MUTTER_PC_MODULES gobject-introspection-1.0"
+fi
 
 AC_SUBST(XWAYLAND_PATH)
 
