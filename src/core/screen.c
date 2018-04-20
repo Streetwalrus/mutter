@@ -695,7 +695,7 @@ meta_screen_new (MetaDisplay *display,
 #endif /* HAVE_XI23 */
     XISelectEvents (xdisplay, xroot, &mask, 1);
 
-    event_mask = (SubstructureRedirectMask | SubstructureNotifyMask |
+    event_mask = (SubstructureNotifyMask |
                   StructureNotifyMask | ColormapChangeMask | PropertyChangeMask);
     XSelectInput (xdisplay, xroot, event_mask);
   }

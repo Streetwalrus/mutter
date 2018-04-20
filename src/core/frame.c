@@ -28,8 +28,7 @@
 #include "keybindings-private.h"
 #include "backends/x11/meta-backend-x11.h"
 
-#define EVENT_MASK (SubstructureRedirectMask |                     \
-                    StructureNotifyMask | SubstructureNotifyMask | \
+#define EVENT_MASK (StructureNotifyMask | SubstructureNotifyMask | \
                     ExposureMask | FocusChangeMask)
 
 void

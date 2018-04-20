@@ -78,12 +78,7 @@ G_DEFINE_TYPE_WITH_CODE (ClutterStageX11,
   ExposureMask | \
   PropertyChangeMask | \
   EnterWindowMask | \
-  LeaveWindowMask | \
-  KeyPressMask | \
-  KeyReleaseMask | \
-  ButtonPressMask | \
-  ButtonReleaseMask | \
-  PointerMotionMask
+  LeaveWindowMask
 
 static void
 send_wmspec_change_state (ClutterBackendX11 *backend_x11,
@@ -111,7 +106,7 @@ send_wmspec_change_state (ClutterBackendX11 *backend_x11,
   XSendEvent (backend_x11->xdpy, 
               DefaultRootWindow (backend_x11->xdpy),
               False,
-              SubstructureRedirectMask | SubstructureNotifyMask,
+              SubstructureNotifyMask,
               (XEvent *)&xclient);
 }
 
@@ -1046,7 +1041,7 @@ handle_wm_protocols_event (ClutterBackendX11 *backend_x11,
       xclient.window = backend_x11->xwin_root;
       XSendEvent (backend_x11->xdpy, xclient.window,
                   False,
-                  SubstructureRedirectMask | SubstructureNotifyMask,
+                  SubstructureNotifyMask,
                   (XEvent *) &xclient);
       return FALSE;
     }
