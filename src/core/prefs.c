@@ -63,8 +63,6 @@
 #define SCHEMA_MUTTER          "org.gnome.mutter"
 #define SCHEMA_INTERFACE       "org.gnome.desktop.interface"
 #define SCHEMA_INPUT_SOURCES   "org.gnome.desktop.input-sources"
-#define SCHEMA_XSETTINGS       "org.gnome.settings-daemon.plugins.xsettings"
-#define SCHEMA_MOUSE           "org.gnome.settings-daemon.peripherals.mouse"
 
 #define SETTINGS(s) g_hash_table_lookup (settings_schemas, (s))
 
@@ -485,13 +483,6 @@ static MetaIntPreference preferences_int[] =
         META_PREF_DRAGGABLE_BORDER_WIDTH,
       },
       &draggable_border_width
-    },
-    {
-      { "drag-threshold",
-        SCHEMA_MOUSE,
-        META_PREF_DRAG_THRESHOLD,
-      },
-      &drag_threshold
     },
     { { NULL, 0, 0 }, NULL },
   };
@@ -958,10 +949,6 @@ meta_prefs_init (void)
   settings = g_settings_new (SCHEMA_MUTTER);
   g_signal_connect (settings, "changed", G_CALLBACK (settings_changed), NULL);
   g_hash_table_insert (settings_schemas, g_strdup (SCHEMA_MUTTER), settings);
-
-  settings = g_settings_new (SCHEMA_MOUSE);
-  g_signal_connect (settings, "changed", G_CALLBACK (settings_changed), NULL);
-  g_hash_table_insert (settings_schemas, g_strdup (SCHEMA_MOUSE), settings);
 
   /* Individual keys we watch outside of our schemas */
   settings = g_settings_new (SCHEMA_INTERFACE);

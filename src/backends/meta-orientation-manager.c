@@ -50,9 +50,6 @@ struct _MetaOrientationManager
 
 G_DEFINE_TYPE (MetaOrientationManager, meta_orientation_manager, G_TYPE_OBJECT)
 
-#define CONF_SCHEMA "org.gnome.settings-daemon.peripherals.touchscreen"
-#define ORIENTATION_LOCK_KEY "orientation-lock"
-
 static MetaOrientation
 orientation_from_string (const char *orientation)
 {
@@ -110,19 +107,7 @@ sync_state (MetaOrientationManager *self)
   if (self->curr_orientation == META_ORIENTATION_UNDEFINED)
     return;
 
-  if (g_settings_get_boolean (self->settings, ORIENTATION_LOCK_KEY))
-    return;
-
   g_signal_emit (self, signals[ORIENTATION_CHANGED], 0);
-}
-
-static void
-orientation_lock_changed (GSettings *settings,
-                          gchar     *key,
-                          gpointer   user_data)
-{
-  MetaOrientationManager *self = user_data;
-  sync_state (self);
 }
 
 static void
@@ -235,9 +220,6 @@ meta_orientation_manager_init (MetaOrientationManager *self)
                                          self,
                                          NULL);
 
-  self->settings = g_settings_new (CONF_SCHEMA);
-  g_signal_connect_object (self->settings, "changed::"ORIENTATION_LOCK_KEY,
-                           G_CALLBACK (orientation_lock_changed), self, 0);
   sync_state (self);
 }
 
@@ -251,8 +233,6 @@ meta_orientation_manager_finalize (GObject *object)
 
   g_bus_unwatch_name (self->iio_watch_id);
   g_clear_object (&self->iio_proxy);
-
-  g_clear_object (&self->settings);
 
   G_OBJECT_CLASS (meta_orientation_manager_parent_class)->finalize (object);
 }
