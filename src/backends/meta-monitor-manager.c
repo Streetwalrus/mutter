@@ -338,23 +338,10 @@ meta_monitor_manager_lid_is_closed_changed (MetaMonitorManager *manager)
   meta_monitor_manager_ensure_configured (manager);
 }
 
-static void
-lid_is_closed_changed (UpClient   *client,
-                       GParamSpec *pspec,
-                       gpointer    user_data)
-{
-  MetaMonitorManager *manager = user_data;
-
-  meta_monitor_manager_lid_is_closed_changed (manager);
-}
-
 static gboolean
 meta_monitor_manager_real_is_lid_closed (MetaMonitorManager *manager)
 {
-  if (!manager->up_client)
-    return FALSE;
-
-  return up_client_get_lid_is_closed (manager->up_client);
+  return FALSE;
 }
 
 gboolean
@@ -708,8 +695,6 @@ static void
 meta_monitor_manager_constructed (GObject *object)
 {
   MetaMonitorManager *manager = META_MONITOR_MANAGER (object);
-  MetaMonitorManagerClass *manager_class =
-    META_MONITOR_MANAGER_GET_CLASS (manager);
   MetaBackend *backend = manager->backend;
   MetaSettings *settings = meta_backend_get_settings (backend);
 
@@ -718,13 +703,6 @@ meta_monitor_manager_constructed (GObject *object)
                       "experimental-features-changed",
                       G_CALLBACK (experimental_features_changed),
                       manager);
-
-  if (manager_class->is_lid_closed == meta_monitor_manager_real_is_lid_closed)
-    {
-      manager->up_client = up_client_new ();
-      g_signal_connect_object (manager->up_client, "notify::lid-is-closed",
-                               G_CALLBACK (lid_is_closed_changed), manager, 0);
-    }
 
   g_signal_connect_object (manager, "notify::power-save-mode",
                            G_CALLBACK (power_save_mode_changed), manager, 0);
@@ -765,7 +743,6 @@ meta_monitor_manager_dispose (GObject *object)
     }
 
   g_clear_object (&manager->config_manager);
-  g_clear_object (&manager->up_client);
 
   G_OBJECT_CLASS (meta_monitor_manager_parent_class)->dispose (object);
 }
@@ -904,14 +881,7 @@ make_display_name (MetaMonitorManager *manager,
 
   if (g_strcmp0 (output->vendor, "unknown") != 0)
     {
-      if (!manager->pnp_ids)
-        manager->pnp_ids = gnome_pnp_ids_new ();
-
-      vendor_name = gnome_pnp_ids_get_pnp_id (manager->pnp_ids,
-                                              output->vendor);
-
-      if (!vendor_name)
-        vendor_name = g_strdup (output->vendor);
+      vendor_name = g_strdup (output->vendor);
     }
   else
     {

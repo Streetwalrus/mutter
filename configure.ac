@@ -88,8 +88,6 @@ MUTTER_PC_MODULES="
    cairo >= 1.10.0
    gsettings-desktop-schemas >= 3.21.4
    json-glib-1.0
-   upower-glib >= 0.99.0
-   gnome-desktop-3.0
    xcomposite >= 0.2
    xcursor
    xdamage
@@ -121,27 +119,27 @@ fi
 AC_ARG_ENABLE(sm,
   AC_HELP_STRING([--disable-sm],
                  [disable mutter's session management support, for embedded/size-sensitive custom non-GNOME builds]),,
-  enable_sm=auto)
+  enable_sm=no)
 
 AC_ARG_ENABLE(startup-notification,
   AC_HELP_STRING([--disable-startup-notification],
                  [disable mutter's startup notification support, for embedded/size-sensitive custom non-GNOME builds]),,
-  enable_startup_notification=auto)
+  enable_startup_notification=no)
 
 AC_ARG_WITH(libcanberra,
   AC_HELP_STRING([--without-libcanberra],
                  [disable the use of libcanberra for playing sounds]),,
-  with_libcanberra=auto)
+  with_libcanberra=no)
 
 AC_ARG_WITH(libwacom,
   AC_HELP_STRING([--without-libwacom],
                  [disable the use of libwacom for advanced tablet management]),,
-  with_libwacom=auto)
+  with_libwacom=no)
 
 AC_ARG_WITH(gudev,
   AC_HELP_STRING([--without-gudev],
                  [disable the use of gudev for device type detection]),,
-  with_gudev=auto)
+  with_gudev=no)
 
 AC_ARG_WITH([xwayland-path],
             [AS_HELP_STRING([--with-xwayland-path], [Absolute path for an X Wayland server])],
@@ -253,6 +251,7 @@ AM_CONDITIONAL([HAVE_REMOTE_DESKTOP],[test "$enable_remote_desktop" = "yes"])
 INTROSPECTION_VERSION=0.9.5
 GOBJECT_INTROSPECTION_CHECK([$INTROSPECTION_VERSION])
 
+found_introspection=no
 if test x$found_introspection != xno; then
   AC_DEFINE(HAVE_INTROSPECTION, 1, [Define if GObject introspection is available])
   MUTTER_PC_MODULES="$MUTTER_PC_MODULES gobject-introspection-1.0"
@@ -281,7 +280,7 @@ MUTTER_NATIVE_BACKEND_MODULES="libdrm $logind_provider libinput >= 1.4 gudev-1.0
 
 AC_ARG_ENABLE(native-backend,
   AS_HELP_STRING([--disable-native-backend], [disable mutter native (KMS) backend]),,
-  enable_native_backend=auto
+  enable_native_backend=no
 )
 have_native_backend="no"
 AS_IF([test "$enable_native_backend" = "yes"], [have_native_backend=yes],
@@ -305,7 +304,7 @@ MUTTER_WAYLAND_MODULES="wayland-server >= 1.13.0"
 
 AC_ARG_ENABLE(wayland,
   AS_HELP_STRING([--disable-wayland], [disable mutter on wayland support]),,
-  enable_wayland=auto
+  enable_wayland=no
 )
 AS_IF([test "$enable_wayland" = "yes"], [have_wayland=yes],
       [test "$enable_wayland" = "auto"], PKG_CHECK_EXISTS([$MUTTER_WAYLAND_MODULES], [have_wayland=yes]))

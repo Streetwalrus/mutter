@@ -111,7 +111,6 @@ struct _MetaBackendPrivate
   MetaPointerConstraint *client_pointer_constraint;
   MetaDnd *dnd;
 
-  UpClient *up_client;
   guint sleep_signal_id;
   GCancellable *cancellable;
   GDBusConnection *system_bus;
@@ -141,7 +140,6 @@ meta_backend_finalize (GObject *object)
   g_clear_object (&priv->dbus_session_watcher);
 #endif
 
-  g_object_unref (priv->up_client);
   if (priv->sleep_signal_id)
     g_dbus_connection_signal_unsubscribe (priv->system_bus, priv->sleep_signal_id);
   g_cancellable_cancel (priv->cancellable);
@@ -616,17 +614,6 @@ meta_backend_create_renderer (MetaBackend *backend,
 }
 
 static void
-lid_is_closed_changed_cb (UpClient   *client,
-                          GParamSpec *pspec,
-                          gpointer    user_data)
-{
-  if (up_client_get_lid_is_closed (client))
-    return;
-
-  meta_idle_monitor_reset_idletime (meta_idle_monitor_get_core ());
-}
-
-static void
 prepare_for_sleep_cb (GDBusConnection *connection,
                       const gchar     *sender_name,
                       const gchar     *object_path,
@@ -698,10 +685,6 @@ meta_backend_initable_init (GInitable     *initable,
   priv->cursor_tracker = g_object_new (META_TYPE_CURSOR_TRACKER, NULL);
 
   priv->dnd = g_object_new (META_TYPE_DND, NULL);
-
-  priv->up_client = up_client_new ();
-  g_signal_connect (priv->up_client, "notify::lid-is-closed",
-                    G_CALLBACK (lid_is_closed_changed_cb), NULL);
 
   priv->cancellable = g_cancellable_new ();
   g_bus_get (G_BUS_TYPE_SYSTEM,

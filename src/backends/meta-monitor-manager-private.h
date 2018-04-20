@@ -36,8 +36,6 @@
 #define META_MONITOR_MANAGER_PRIVATE_H
 
 #include <cogl/cogl.h>
-#include <libgnome-desktop/gnome-pnp-ids.h>
-#include <libupower-glib/upower.h>
 
 #include "display-private.h"
 #include <meta/screen.h>
@@ -178,9 +176,6 @@ struct _MetaMonitorManager
   int persistent_timeout_id;
 
   MetaMonitorConfigManager *config_manager;
-
-  GnomePnpIds *pnp_ids;
-  UpClient *up_client;
 
   gulong experimental_features_changed_handler_id;
 
