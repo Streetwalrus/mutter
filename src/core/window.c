@@ -1478,8 +1478,6 @@ meta_window_unmanage (MetaWindow  *window,
                   window->desc);
     }
 
-  g_assert (window->display->focus_window != window);
-
   if (window->struts)
     {
       meta_free_gslist_and_elements (window->struts);

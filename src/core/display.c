@@ -1525,58 +1525,6 @@ meta_display_timestamp_too_old (MetaDisplay *display,
   return FALSE;
 }
 
-static void
-request_xserver_input_focus_change (MetaDisplay *display,
-                                    MetaScreen  *screen,
-                                    MetaWindow  *meta_window,
-                                    Window       xwindow,
-                                    guint32      timestamp)
-{
-  gulong serial;
-
-  if (meta_display_timestamp_too_old (display, &timestamp))
-    return;
-
-  meta_error_trap_push (display);
-
-  /* In order for mutter to know that the focus request succeeded, we track
-   * the serial of the "focus request" we made, but if we take the serial
-   * of the XSetInputFocus request, then there's no way to determine the
-   * difference between focus events as a result of the SetInputFocus and
-   * focus events that other clients send around the same time. Ensure that
-   * we know which is which by making two requests that the server will
-   * process at the same time.
-   */
-  XGrabServer (display->xdisplay);
-
-  serial = XNextRequest (display->xdisplay);
-
-  XSetInputFocus (display->xdisplay,
-                  xwindow,
-                  RevertToPointerRoot,
-                  timestamp);
-
-  XChangeProperty (display->xdisplay, display->timestamp_pinging_window,
-                   display->atom__MUTTER_FOCUS_SET,
-                   XA_STRING, 8, PropModeAppend, NULL, 0);
-
-  XUngrabServer (display->xdisplay);
-  XFlush (display->xdisplay);
-
-  meta_display_update_focus_window (display,
-                                    meta_window,
-                                    xwindow,
-                                    serial,
-                                    TRUE);
-
-  meta_error_trap_pop (display);
-
-  display->last_focus_time = timestamp;
-
-  if (meta_window == NULL || meta_window != display->autoraise_window)
-    meta_display_remove_autoraise_callback (display);
-}
-
 MetaWindow*
 meta_display_lookup_x_window (MetaDisplay *display,
                               Window       xwindow)
@@ -2832,11 +2780,6 @@ meta_display_set_input_focus_window (MetaDisplay *display,
                                      gboolean     focus_frame,
                                      guint32      timestamp)
 {
-  request_xserver_input_focus_change (display,
-                                      window->screen,
-                                      window,
-                                      focus_frame ? window->frame->xwindow : window->xwindow,
-                                      timestamp);
 }
 
 void
@@ -2845,11 +2788,6 @@ meta_display_set_input_focus_xwindow (MetaDisplay *display,
                                       Window       window,
                                       guint32      timestamp)
 {
-  request_xserver_input_focus_change (display,
-                                      screen,
-                                      NULL,
-                                      window,
-                                      timestamp);
 }
 
 void
@@ -2857,11 +2795,6 @@ meta_display_focus_the_no_focus_window (MetaDisplay *display,
                                         MetaScreen  *screen,
                                         guint32      timestamp)
 {
-  request_xserver_input_focus_change (display,
-                                      screen,
-                                      NULL,
-                                      screen->no_focus_window,
-                                      timestamp);
 }
 
 void
